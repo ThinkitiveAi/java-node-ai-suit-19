@@ -1,0 +1,345 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Health First API",
+    "description": "Healthcare management API with provider and patient management",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@healthfirst.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health Check"
+        ],
+        "summary": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "uptime": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/provider/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Provider login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "email": "john.doe@clinic.com",
+                "password": "SecurePassword123!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string"
+                        },
+                        "token_type": {
+                          "type": "string"
+                        },
+                        "expires_in": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/provider/availability": {
+      "post": {
+        "tags": [
+          "Availability Management"
+        ],
+        "summary": "Create provider availability",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "start_time": {
+                    "type": "string"
+                  },
+                  "end_time": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  },
+                  "slot_duration": {
+                    "type": "integer"
+                  },
+                  "break_duration": {
+                    "type": "integer"
+                  },
+                  "is_recurring": {
+                    "type": "boolean"
+                  },
+                  "appointment_type": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "object"
+                  },
+                  "pricing": {
+                    "type": "object"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "date",
+                  "start_time",
+                  "end_time",
+                  "timezone",
+                  "slot_duration",
+                  "appointment_type",
+                  "location",
+                  "pricing"
+                ]
+              },
+              "example": {
+                "date": "2026-04-01",
+                "start_time": "09:00",
+                "end_time": "12:00",
+                "timezone": "America/New_York",
+                "slot_duration": 30,
+                "break_duration": 15,
+                "is_recurring": false,
+                "appointment_type": "consultation",
+                "location": {
+                  "type": "clinic",
+                  "address": "123 Medical Center Dr, New York, NY 10001",
+                  "room_number": "Room 205",
+                  "city": "New York",
+                  "state": "NY",
+                  "zip": "10001"
+                },
+                "pricing": {
+                  "base_fee": 150,
+                  "insurance_accepted": true,
+                  "currency": "USD",
+                  "copay": 25,
+                  "deductible_applies": true
+                },
+                "notes": "Morning consultation slots"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Availability created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "availability_id": {
+                          "type": "string"
+                        },
+                        "slots_created": {
+                          "type": "integer"
+                        },
+                        "total_appointments_available": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/availability/search": {
+      "get": {
+        "tags": [
+          "Availability Management"
+        ],
+        "summary": "Search available slots",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Date to search"
+          },
+          {
+            "name": "specialization",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Medical specialization"
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Location"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total_results": {
+                          "type": "integer"
+                        },
+                        "results": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health Check",
+      "description": "API health monitoring"
+    },
+    {
+      "name": "Authentication",
+      "description": "User authentication"
+    },
+    {
+      "name": "Availability Management",
+      "description": "Provider availability and scheduling"
+    }
+  ]
+}
