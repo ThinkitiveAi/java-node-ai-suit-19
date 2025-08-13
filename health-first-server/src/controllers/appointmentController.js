@@ -17,11 +17,11 @@ const bookAppointment = asyncHandler(async (req, res, next) => {
 
 	// Find the slot
 	const slot = await AppointmentSlot.findById(slot_id);
-	if (!slot) {
+  if (!slot) {
 		return res.status(404).json({ error: 'Slot not found' });
-	}
+  }
 
-	if (!slot.isAvailable()) {
+  if (!slot.isAvailable()) {
 		return res.status(409).json({ error: 'Slot is not available for booking' });
 	}
 
@@ -51,9 +51,9 @@ const bookAppointment = asyncHandler(async (req, res, next) => {
 	const saved = await slot.bookSlot(patientId, finalType, notes || '');
 
 	return res.status(201).json({
-		success: true,
-		message: 'Appointment booked successfully',
-		data: {
+      success: true,
+      message: 'Appointment booked successfully',
+      data: {
 			appointment_id: saved._id,
 			booking_reference: saved.booking_reference,
 			provider_id: saved.provider_id,
@@ -63,8 +63,8 @@ const bookAppointment = asyncHandler(async (req, res, next) => {
 			slot_start_time: saved.slot_start_time,
 			slot_end_time: saved.slot_end_time,
 			notes: saved.notes
-		}
-	});
+    }
+  });
 });
 
 // List appointments for the authenticated user
@@ -86,8 +86,8 @@ const listAppointments = asyncHandler(async (req, res, next) => {
 	if (userIsProvider) {
 		filter.provider_id = req.user.provider_id;
 	}
-
-	if (status) {
+  
+  if (status) {
 		filter.status = status;
 	}
 
@@ -102,27 +102,27 @@ const listAppointments = asyncHandler(async (req, res, next) => {
 
 	const [items, total] = await Promise.all([
 		AppointmentSlot.find(filter)
-			.sort({ slot_start_time: -1 })
+    .sort({ slot_start_time: -1 })
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize),
 		AppointmentSlot.countDocuments(filter)
 	]);
 
 	return res.status(200).json({
-		success: true,
-		data: {
+    success: true,
+    data: {
 			items,
-			pagination: {
+      pagination: {
 				page: pageNumber,
 				limit: pageSize,
 				total,
 				total_pages: Math.ceil(total / pageSize)
-			}
-		}
-	});
+      }
+    }
+  });
 });
 
 module.exports = {
-	bookAppointment,
+  bookAppointment,
 	listAppointments
 }; 
