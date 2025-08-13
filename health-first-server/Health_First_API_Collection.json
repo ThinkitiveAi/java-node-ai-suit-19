@@ -541,6 +541,53 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Appointment Management",
+      "item": [
+        {
+          "name": "Book Appointment (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{patient_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slot_id\": \"SLOT_ID_HERE\",\n  \"appointment_type\": \"consultation\",\n  \"notes\": \"Initial consultation\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/appointments/book",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "appointments", "book"]
+            },
+            "description": "Book an available appointment slot. Requires patient token."
+          },
+          "response": []
+        },
+        {
+          "name": "List My Appointments (Patient/Provider)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patient_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/appointments?status=booked&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "appointments"],
+              "query": [
+                { "key": "status", "value": "booked" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "List appointments for the authenticated user (patient or provider). Use provider token to list provider appointments."
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [

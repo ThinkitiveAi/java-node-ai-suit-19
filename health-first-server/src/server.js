@@ -8,6 +8,7 @@ require('dotenv').config();
 const providerRoutes = require('./routes/providerRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const availabilityRoutes = require('./routes/availabilityRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/provider', providerRoutes);
 app.use('/api/v1/patient', patientRoutes);
 app.use('/api/v1', availabilityRoutes);
+app.use('/api/v1', appointmentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
