@@ -3,17 +3,20 @@ const { isValidTimezone, isDateInPast, isTimeOverlapping } = require('../utils/t
 
 // Input sanitization function
 const sanitizeInput = (input) => {
-  if (typeof input === 'string') {
-    return input.trim().replace(/[<>]/g, '');
-  }
-  if (typeof input === 'object' && input !== null) {
-    const sanitized = {};
-    for (const [key, value] of Object.entries(input)) {
-      sanitized[key] = sanitizeInput(value);
-    }
-    return sanitized;
-  }
-  return input;
+	if (typeof input === 'string') {
+		return input.trim().replace(/[<>]/g, '');
+	}
+	if (Array.isArray(input)) {
+		return input.map(sanitizeInput);
+	}
+	if (typeof input === 'object' && input !== null) {
+		const sanitized = {};
+		for (const [key, value] of Object.entries(input)) {
+			sanitized[key] = sanitizeInput(value);
+		}
+		return sanitized;
+	}
+	return input;
 };
 
 // Provider availability validation schema
